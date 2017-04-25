@@ -41,16 +41,19 @@ namespace Socket_Engine
 
         public bool Listen(int port = 8888)
         {
-            if (m_Port == port || port == 0)
-                return true;
-            else if (m_Port != 0)
+            /*if (m_Port == port || port == 0)
+                return true;*/
+            if (m_Port != 0 && port != 0)
                 m_Socket.Disconnect(true);
 
             try
             {
-                m_Socket.Bind(new IPEndPoint(IPAddress.Any, port));
-                m_Port = port;
-
+                if (m_Port != port && port != 0)
+                {
+                    m_Socket.Bind(new IPEndPoint(IPAddress.Any, port));
+                    m_Port = port;
+                }
+                    
                 StateObject state = new StateObject();
                 state.callback = MessageReceived;
                 state.handler = m_Socket;
