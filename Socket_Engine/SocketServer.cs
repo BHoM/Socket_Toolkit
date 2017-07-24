@@ -52,14 +52,6 @@ namespace BH.Adapter.Socket
             if (port < 3000 || port > 49000) 
                 throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 49000");
 
-            // Make sure the timer exists
-            /*if (m_Timer == null)
-            {
-                m_Timer = new System.Timers.Timer(m_TimerInterval);
-                m_Timer.Elapsed += CheckMessages;
-                m_Timer.Start();
-            }*/
-
             // Stop any existing server
             if (m_Listener != null)
             { 
@@ -82,10 +74,6 @@ namespace BH.Adapter.Socket
 
         public void Stop()
         {
-            // Stop the timer
-            //m_Timer.Stop();
-            //m_Timer = null;
-
             // Stop the server
             m_Listener.Stop();
             m_Listener = null;
@@ -139,8 +127,8 @@ namespace BH.Adapter.Socket
                         bytesRead += available;
                         if (bytesRead == messageSize)
                         {
-                            //List<BsonDocument> readBson = BsonSerializer.Deserialize(messageBuffer, typeof(object)) as List<BsonDocument>;
                             List<object> objects = BsonSerializer.Deserialize(messageBuffer, typeof(List<object>)) as List<object>;
+                            messageSize = 0;
                             if (DataObservers != null)
                                 DataObservers.Invoke(objects);
                         }
@@ -150,29 +138,11 @@ namespace BH.Adapter.Socket
                         }
                     }
                 }
+
+                if (available == 0)
+                    Thread.Sleep(100);
             }
         }
-
-        /***************************************************/
-
-        //private void CheckMessages(Object source, ElapsedEventArgs e)
-        //{
-        //    foreach (TcpClient client in m_Clients)
-        //    {
-        //        if (client.Available > 0)
-        //        {
-        //            BitConverter.
-        //            //client.GetStream().
-        //            MemoryStream memory = new MemoryStream();
-        //            memory.
-        //            var reader = new BsonBinaryReader(client.GetStream());
-        //            List<BsonDocument> readBson = BsonSerializer.Deserialize(reader, typeof(object)) as List<BsonDocument>;
-        //            List<object> objects = readBson.Select(x => BsonSerializer.Deserialize(x, typeof(object))).ToList();
-        //            if (DataObservers != null)
-        //                DataObservers.Invoke(objects);
-        //        }
-        //    }
-        //}
 
 
         /***************************************************/
@@ -181,10 +151,7 @@ namespace BH.Adapter.Socket
 
         private int m_Port = 8888;
         private TcpListener m_Listener = null;
-        private System.Timers.Timer m_Timer = null;
         private List<TcpClient> m_Clients = new List<TcpClient>();
-
-        private static int m_TimerInterval = 100; 
 
     }
 }
