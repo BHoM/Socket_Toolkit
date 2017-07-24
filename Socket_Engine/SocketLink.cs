@@ -38,7 +38,7 @@ namespace BH.Adapter.Socket
 
         ~SocketLink()
         {
-            
+            m_Client.Close();
         }
 
 
@@ -60,7 +60,7 @@ namespace BH.Adapter.Socket
         {
             NetworkStream stream = m_Client.GetStream();
 
-            // First send teh size of the message
+            // First send the size of the message
             Int32 value = IPAddress.HostToNetworkOrder(data.Length); //Convert long from Host Byte Order to Network Byte Order
             stream.Write(BitConverter.GetBytes(value), 0, sizeof(Int32));
 

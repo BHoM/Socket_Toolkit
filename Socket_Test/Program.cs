@@ -63,9 +63,6 @@ namespace Socket_Test
                 }
             };
 
-            for (int i = 0; i < 10000; i++)
-                items.Add(new Node { Point = new Point(i, 2, 3), Name = ("X" + i) });
-
             int port = 8888;
             SocketServer server = new SocketServer(port);
             server.DataObservers += ReceivedData;
@@ -73,6 +70,22 @@ namespace Socket_Test
             Console.WriteLine("Sending data...");
             SocketLink client = new SocketLink("127.0.0.1", port);
             client.SendData(items);
+
+            Thread.Sleep(1000);
+
+            for (int i = 0; i < 10000; i++)
+                items.Add(new Node { Point = new Point(i, 2, 3), Name = ("X" + i) });
+            Console.WriteLine("Sending data...");
+            client.SendData(items);
+
+            while(true)
+            {
+                string userMessage = Console.ReadLine();
+                if (userMessage.Length == 0)
+                    break;
+                else
+                    client.SendData(new List<object> { userMessage });
+            }
         }
 
         static void ReceivedData(List<object> objects)
