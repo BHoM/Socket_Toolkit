@@ -1,143 +1,190 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
-using SS = System.Net.Sockets;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
-using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Timers;
 
-namespace Socket_Engine
+namespace BH.Adapter.Socket
 {
-
     public class SocketServer
     {
-        // State object for reading client data asynchronously
-        public class StateObject
+        public delegate void DataEvent(List<object> data);
+
+
+        /***************************************************/
+        /**** Properties                                ****/
+        /***************************************************/
+
+        public event DataEvent DataObservers;
+
+
+        /***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
+
+        public SocketServer(int port = 8888)
         {
-            public SS.Socket handler = null;                    // Client  socket.
-            public byte[] buffer = null;                        // Receive buffer.
-            public MessageEvent callback = null;                // Callback method
-            public int totalBytesRead = 0;                      // Total number of bytes read so far
-            public int port = 0;                                // port used by socket
+            Start(port);
         }
 
-        public delegate void MessageEvent(string data);
-
-        public SocketServer()
-        {
-            m_Socket = new SS.Socket(SS.AddressFamily.InterNetwork, SS.SocketType.Dgram, SS.ProtocolType.Udp);
-        }
+        /***************************************************/
 
         ~SocketServer()
         {
-            if (m_Socket != null && m_Socket.Connected)
-                m_Socket.Disconnect(false);
-
-            if (m_Thread != null && m_Thread.IsAlive)
-                m_Thread.Abort();
+            Stop();
         }
 
-        public bool Listen(int port = 8888)
+
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
+        public bool Start(int port = 8888)
         {
-            /*if (m_Port == port || port == 0)
-                return true;*/
-            if (m_Port != 0 && port != 0)
-                m_Socket.Disconnect(true);
+            // Check the port value
+            if (port < 3000 || port > 49000) 
+                throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 49000");
 
-            try
+            // Make sure the timer exists
+            /*if (m_Timer == null)
             {
-                if (m_Port != port && port != 0)
-                {
-                    m_Socket.Bind(new IPEndPoint(IPAddress.Any, port));
-                    m_Port = port;
-                }
-                    
-                StateObject state = new StateObject();
-                state.callback = MessageReceived;
-                state.handler = m_Socket;
-                state.port = port;
+                m_Timer = new System.Timers.Timer(m_TimerInterval);
+                m_Timer.Elapsed += CheckMessages;
+                m_Timer.Start();
+            }*/
 
-                if (m_Thread != null && m_Thread.IsAlive)
-                    m_Thread.Abort();
+            // Stop any existing server
+            if (m_Listener != null)
+            { 
+                m_Listener.Stop();
+                m_Listener = null;
+            }
 
-                m_Thread = new Thread(() => ReadMessage(state));
-                m_Thread.Start();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Something went wrong inside the Listen method of the socket on port " + port);
-                Debug.WriteLine(e);
-                return false;
-            }
+            // Start new server
+            m_Port = port;
+            m_Listener = new TcpListener(IPAddress.Any, m_Port);
+            m_Listener.Start();
+
+            // Start accepting client
+            m_Listener.BeginAcceptTcpClient(AcceptClient, m_Listener);
 
             return true;
         }
 
-        public MessageEvent MessageReceived;
+        /***************************************************/
 
-
-        /*************************************/
-        /****  Private fields & methods   ****/
-        /*************************************/
-
-        private int m_Port = 0;
-        private SS.Socket m_Socket = null;
-        private Thread m_Thread = null;
-
-        private static void ReadMessage(StateObject state)
+        public void Stop()
         {
-            while (true)
-            {
-                try
-                {
-                    int bufferSize = ReadInt(state);
-                    if (bufferSize > 0)
-                    {
-                        state.totalBytesRead = 0;
-                        state.buffer = new byte[bufferSize];
-                        state.handler.ReceiveBufferSize = bufferSize;
-                        string message = ReadString(state);
+            // Stop the timer
+            //m_Timer.Stop();
+            //m_Timer = null;
 
-                        if (state.callback != null)
-                            state.callback.Invoke(message);
+            // Stop the server
+            m_Listener.Stop();
+            m_Listener = null;
+        }
+
+
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
+        private void AcceptClient(IAsyncResult ar)
+        {
+            TcpListener listener = (TcpListener)ar.AsyncState;
+            TcpClient client = listener.EndAcceptTcpClient(ar);
+            m_Clients.Add(client);
+            Thread clientThread = new Thread(() => ListenToClient(client));
+            clientThread.Start();
+        }
+
+        /***************************************************/
+
+        private void ListenToClient(TcpClient client)
+        {
+            int messageSize = 0;
+            int bytesRead = 0;
+            byte[] sizeBuffer = new byte[4];
+            byte[] messageBuffer = null;
+            NetworkStream stream = client.GetStream();
+
+            while(true)
+            {
+                int available = client.Available;
+                if (messageSize == 0) 
+                {
+                    if (available >= 4)
+                    {
+                        stream.Read(sizeBuffer, 0, 4);
+                        if (BitConverter.IsLittleEndian)
+                            Array.Reverse(sizeBuffer);
+
+                        messageSize = BitConverter.ToInt32(sizeBuffer, 0);
+                        bytesRead = 0;
+                        messageBuffer = new byte[messageSize];
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine(e);
+                    if (available > 0)
+                    {
+                        stream.Read(messageBuffer, bytesRead, available);
+                        bytesRead += available;
+                        if (bytesRead == messageSize)
+                        {
+                            //List<BsonDocument> readBson = BsonSerializer.Deserialize(messageBuffer, typeof(object)) as List<BsonDocument>;
+                            List<object> objects = BsonSerializer.Deserialize(messageBuffer, typeof(List<object>)) as List<object>;
+                            if (DataObservers != null)
+                                DataObservers.Invoke(objects);
+                        }
+                        else if (bytesRead > messageSize)
+                        {
+                            throw new Exception("Incorrect message received. Exceeded expected size of " + messageSize + " bytes.");
+                        }
+                    }
                 }
-
-                Thread.Sleep(100);
             }
-            
         }
 
-        private static int ReadInt(StateObject state)
-        {
-            byte[] buffer = new byte[sizeof(Int32)];
-            EndPoint remote = (EndPoint)(new IPEndPoint(IPAddress.Any, 0));
+        /***************************************************/
 
-            state.handler.ReceiveFrom(buffer, buffer.Length, 0, ref remote);
-            if (BitConverter.IsLittleEndian)
-                Array.Reverse(buffer);
+        //private void CheckMessages(Object source, ElapsedEventArgs e)
+        //{
+        //    foreach (TcpClient client in m_Clients)
+        //    {
+        //        if (client.Available > 0)
+        //        {
+        //            BitConverter.
+        //            //client.GetStream().
+        //            MemoryStream memory = new MemoryStream();
+        //            memory.
+        //            var reader = new BsonBinaryReader(client.GetStream());
+        //            List<BsonDocument> readBson = BsonSerializer.Deserialize(reader, typeof(object)) as List<BsonDocument>;
+        //            List<object> objects = readBson.Select(x => BsonSerializer.Deserialize(x, typeof(object))).ToList();
+        //            if (DataObservers != null)
+        //                DataObservers.Invoke(objects);
+        //        }
+        //    }
+        //}
 
-            return BitConverter.ToInt32(buffer, 0);
-        }
 
-        public static string ReadString(StateObject state)
-        {
-            int messageLength = state.buffer.Length;
-            EndPoint remote = (EndPoint)(new IPEndPoint(IPAddress.Any, 0));
+        /***************************************************/
+        /**** Private Fields                            ****/
+        /***************************************************/
 
-            while (state.totalBytesRead < messageLength)
-            {
-                int receivedDataLength = state.handler.ReceiveFrom(state.buffer, state.totalBytesRead, messageLength - state.totalBytesRead, 0, ref remote);
-                state.totalBytesRead += receivedDataLength;
-            }
+        private int m_Port = 8888;
+        private TcpListener m_Listener = null;
+        private System.Timers.Timer m_Timer = null;
+        private List<TcpClient> m_Clients = new List<TcpClient>();
 
-            return Encoding.ASCII.GetString(state.buffer, 0, messageLength);
-        }
+        private static int m_TimerInterval = 100; 
+
     }
 }

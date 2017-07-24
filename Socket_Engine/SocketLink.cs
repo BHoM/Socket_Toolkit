@@ -1,77 +1,88 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net;
-using SS = System.Net.Sockets;
-using System.Threading;
 
-namespace Socket_Engine
+namespace BH.Adapter.Socket
 {
-    public static class SocketLink
+    public class SocketLink
     {
-        public static bool SendData(string host, int destPort, string data)
+        /***************************************************/
+        /**** Properties                                ****/
+        /***************************************************/
+
+
+        /***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
+
+        public SocketLink(string server, int port = 8888)
         {
-            IPAddress dest = Dns.GetHostAddresses(host)[0]; //Get the destination IP Address
-            IPEndPoint ePoint = new IPEndPoint(dest, destPort);
-            SS.Socket mySocket = new SS.Socket(SS.AddressFamily.InterNetwork, SS.SocketType.Dgram, SS.ProtocolType.Udp); //Create a socket using the same protocols as in the Javascript file (Dgram and Udp)
+            // Check the port value
+            if (port < 3000 || port > 49000)
+                throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 49000");
 
-            //byte[] outBuffer = Encoding.ASCII.GetBytes(data); //Convert the data to a byte array
-            //int nbBytes = mySocket.SendTo(outBuffer, ePoint); //Send the data to the socket
+            // Set things up
+            m_Port = port;
+            m_Client = new TcpClient(server, port);
+        }
 
-            bool done = SendString(mySocket, ePoint, data);
+        /***************************************************/
 
-            mySocket.Close(); //Socket use over, time to close it
-
-            return done;
+        ~SocketLink()
+        {
+            
         }
 
 
-        /*************************************/
-        /****  Private methods            ****/
-        /*************************************/
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
 
-        private static bool SendInt(SS.Socket mySocket, IPEndPoint ePoint, Int32 value)
+        public bool SendData(List<object> objects)
         {
-            value = IPAddress.HostToNetworkOrder(value); //Convert long from Host Byte Order to Network Byte Order
-            if (!SendAll(mySocket, ePoint, BitConverter.GetBytes(value))) //Try to send int... If int fails to send
-                return false; //Return false: int not successfully sent
-            return true; //Return true: int successfully sent
+            MemoryStream memory = new MemoryStream();
+            BsonSerializer.Serialize(new BsonBinaryWriter(memory), typeof(object), objects.Select(x => x.ToBsonDocument()));
+
+            return SendData(memory.ToArray());
         }
 
-        /*************************************/
+        /***************************************************/
 
-        private static bool SendString(SS.Socket mySocket, IPEndPoint ePoint, string message)
+        public bool SendData(byte[] data)
         {
-            Int32 bufferlength = message.Count(); //Find string buffer length
-            if (!SendInt(mySocket, ePoint, bufferlength)) //Send length of string buffer, If sending buffer length fails...
-                return false; //Return false: Failed to send string buffer length
-            return SendAll(mySocket, ePoint, Encoding.ASCII.GetBytes(message)); //Try to send string buffer
+            NetworkStream stream = m_Client.GetStream();
+
+            // First send teh size of the message
+            Int32 value = IPAddress.HostToNetworkOrder(data.Length); //Convert long from Host Byte Order to Network Byte Order
+            stream.Write(BitConverter.GetBytes(value), 0, sizeof(Int32));
+
+            // Then send the message itself
+            stream.Write(data, 0, data.Length);
+
+            return true;
         }
 
-        /*************************************/
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
-        private static bool SendAll(SS.Socket mySocket, IPEndPoint ePoint, byte[] data)
-        {
-            int totalbytes = data.Length;
 
-            int bytessent = 0; //Holds the total bytes sent
-            while (bytessent < totalbytes) //While we still have more bytes to send
-            {
-                try
-                {
-                    int nbBytes = Math.Min(5000, totalbytes - bytessent);
-                    int RetnCheck = mySocket.SendTo(new ArraySegment<byte>(data, bytessent, nbBytes).ToArray(), ePoint); //Try to send remaining bytes
-                    bytessent += RetnCheck; //Add to total bytes sent
-                    Thread.Sleep(50);
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-            return true; //Success!
-        }
+
+
+        /***************************************************/
+        /**** Private Fields                            ****/
+        /***************************************************/
+
+        private int m_Port = 8888;
+        private TcpClient m_Client = null;
+
     }
 }
