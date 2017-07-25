@@ -49,8 +49,8 @@ namespace BH.Adapter.Socket
         public bool Start(int port = 8888)
         {
             // Check the port value
-            if (port < 3000 || port > 49000) 
-                throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 49000");
+            if (port < 3000 || port > 65000) 
+                throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 65000");
 
             // Stop any existing server
             if (m_Listener != null)
@@ -86,11 +86,18 @@ namespace BH.Adapter.Socket
 
         private void AcceptClient(IAsyncResult ar)
         {
-            TcpListener listener = (TcpListener)ar.AsyncState;
-            TcpClient client = listener.EndAcceptTcpClient(ar);
-            m_Clients.Add(client);
-            Thread clientThread = new Thread(() => ListenToClient(client));
-            clientThread.Start();
+            try
+            {
+                TcpListener listener = (TcpListener)ar.AsyncState;
+                TcpClient client = listener.EndAcceptTcpClient(ar);
+                m_Clients.Add(client);
+                Thread clientThread = new Thread(() => ListenToClient(client));
+                clientThread.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to accept client: " + e);
+            }
         }
 
         /***************************************************/
@@ -103,7 +110,7 @@ namespace BH.Adapter.Socket
             byte[] messageBuffer = null;
             NetworkStream stream = client.GetStream();
 
-            while(true)
+            while(true)     // TODO: Make sure the case of multiple concatenated messages is covered
             {
                 int available = client.Available;
                 if (messageSize == 0) 
