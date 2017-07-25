@@ -26,8 +26,8 @@ namespace BH.Adapter.Socket
         public SocketLink(string server, int port = 8888)
         {
             // Check the port value
-            if (port < 3000 || port > 49000)
-                throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 49000");
+            if (port < 3000 || port > 65000)
+                throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 65000");
 
             // Set things up
             m_Port = port;
