@@ -44,10 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SocketLink_Udp.cs" />
-    <Compile Include="SocketListener.cs" />
+    <Compile Include="Udp\SocketLink_Udp.cs" />
     <Compile Include="SocketServer.cs" />
-    <Compile Include="SocketServer_Udp.cs" />
+    <Compile Include="Udp\SocketServer_Udp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketLink.cs" />
   </ItemGroup>
