@@ -31,7 +31,6 @@ namespace BH.Adapter.Socket
 
         public SocketServer(int port = 8888)
         {
-            Start(port);
         }
 
         /***************************************************/
@@ -75,8 +74,16 @@ namespace BH.Adapter.Socket
         public void Stop()
         {
             // Stop the server
-            m_Listener.Stop();
+            if (m_Listener != null)
+                m_Listener.Stop();
             m_Listener = null;
+        }
+
+        /***************************************************/
+
+        public bool IsActive()
+        {
+            return (m_Listener != null);
         }
 
 
@@ -130,8 +137,9 @@ namespace BH.Adapter.Socket
                 {
                     if (available > 0)
                     {
-                        stream.Read(messageBuffer, bytesRead, available);
-                        bytesRead += available;
+                        int toRead = Math.Min(available, messageSize - bytesRead);
+                        stream.Read(messageBuffer, bytesRead, toRead);
+                        bytesRead += toRead;
                         if (bytesRead == messageSize)
                         {
                             List<object> objects = BsonSerializer.Deserialize(messageBuffer, typeof(List<object>)) as List<object>;

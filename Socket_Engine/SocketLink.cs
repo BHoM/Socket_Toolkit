@@ -48,6 +48,7 @@ namespace BH.Adapter.Socket
 
         public bool SendData(List<object> objects)
         {
+
             MemoryStream memory = new MemoryStream();
             BsonSerializer.Serialize(new BsonBinaryWriter(memory), typeof(object), objects.Select(x => x.ToBsonDocument()));
 
@@ -58,14 +59,19 @@ namespace BH.Adapter.Socket
 
         public bool SendData(byte[] data)
         {
+            if (!m_Client.Client.Poll(500, SelectMode.SelectWrite))
+                return false; // Still sending data
+                
             NetworkStream stream = m_Client.GetStream();
 
             // First send the size of the message
             Int32 value = IPAddress.HostToNetworkOrder(data.Length); //Convert long from Host Byte Order to Network Byte Order
             stream.Write(BitConverter.GetBytes(value), 0, sizeof(Int32));
+            stream.Flush();
 
             // Then send the message itself
             stream.Write(data, 0, data.Length);
+            stream.Flush();
 
             return true;
         }
