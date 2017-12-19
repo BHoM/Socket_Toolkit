@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BH.Adapter.Socket
@@ -31,14 +32,32 @@ namespace BH.Adapter.Socket
 
             // Set things up
             m_Port = port;
-            m_Client = new TcpClient(server, port);
+            m_ServerName = server;
+            for (int i = 0; i < 5; i++)
+            {
+                try
+                {
+                    m_Client = new TcpClient(server, port);
+                    break;
+                }
+                catch(Exception)
+                {
+                    m_Client = null;
+                    Thread.Sleep(500);
+                }
+            }
+
+            if (m_Client == null)
+                throw new Exception("The socket link failed to connect to port " + port);
+            
         }
 
         /***************************************************/
 
         ~SocketLink()
         {
-            m_Client.Close();
+            if (m_Client != null)
+                m_Client.Close();
         }
 
 
@@ -59,6 +78,16 @@ namespace BH.Adapter.Socket
 
         public bool SendData(byte[] data)
         {
+            if (m_Client == null)
+            {
+                try { m_Client = new TcpClient(m_ServerName, m_Port); }
+                catch (Exception) { m_Client = null; }
+
+                if (m_Client == null)
+                    throw new Exception("The socket link failed to connect to port " + m_Port);
+            }
+
+
             if (!m_Client.Client.Poll(500, SelectMode.SelectWrite))
                 return false; // Still sending data
                 
@@ -88,6 +117,7 @@ namespace BH.Adapter.Socket
         /***************************************************/
 
         private int m_Port = 8888;
+        private string m_ServerName = "";
         private TcpClient m_Client = null;
 
     }
