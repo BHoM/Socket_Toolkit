@@ -66,6 +66,7 @@ namespace Socket_Test
             int port = 8888;
             SocketServer server = new SocketServer(port);
             server.DataObservers += ReceivedData;
+            server.Start(port);
 
             Console.WriteLine("Sending data...");
             SocketLink client = new SocketLink("127.0.0.1", port);
