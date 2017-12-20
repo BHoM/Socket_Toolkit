@@ -69,7 +69,7 @@ namespace BH.Adapter.Socket
         {
 
             MemoryStream memory = new MemoryStream();
-            BsonSerializer.Serialize(new BsonBinaryWriter(memory), typeof(object), objects.Select(x => x.ToBsonDocument()));
+            BsonSerializer.Serialize(new BsonBinaryWriter(memory), typeof(List<BsonDocument>), objects.Select(x => x.ToBsonDocument()).ToList());
 
             return SendData(memory.ToArray());
         }
