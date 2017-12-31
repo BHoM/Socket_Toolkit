@@ -50,11 +50,11 @@ namespace Socket_Test
                 new C { a = 3, c = 56 },
                 new D { a = 4, b = 67, d = 123 },
                 new E { a = 5, c = 78, e = 456 },
-                new Node {Point = new Point(1, 2, 3), Name = "X"},
+                new Node {Position = new Point { X = 1, Y = 2, Z = 3 }, Name = "X"},
                 new List<BHoMObject> {
-                    new Node {Point = new Point(1, 2, 3), Name = "A"},
-                    new Node {Point = new Point(4, 5, 6), Name = "B"},
-                    new Node {Point = new Point(7, 8, 9), Name = "C"}
+                    new Node {Position  = new Point { X = 1, Y = 2, Z = 3 }, Name = "A"},
+                    new Node {Position  = new Point { X = 4, Y = 5, Z = 6 }, Name = "B"},
+                    new Node {Position  = new Point { X = 7, Y = 8, Z = 9 }, Name = "C"}
                 },
                 new Dictionary<string, A> {
                     { "A",  new A { a = 1 } },
@@ -75,7 +75,7 @@ namespace Socket_Test
             Thread.Sleep(1000);
 
             for (int i = 0; i < 10000; i++)
-                items.Add(new Node { Point = new Point(i, 2, 3), Name = ("X" + i) });
+                items.Add(new Node { Position = new Point { X = 1, Y = 2, Z = 3 }, Name = ("X" + i) });
             Console.WriteLine("Sending data...");
             client.SendData(items);
 
