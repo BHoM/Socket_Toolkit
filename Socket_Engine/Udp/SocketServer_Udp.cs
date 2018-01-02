@@ -5,9 +5,8 @@ using SS = System.Net.Sockets;
 using System.Threading;
 using System.Diagnostics;
 
-namespace Socket_Engine
+namespace BH.Engine.Socket
 {
-
     public class SocketServer_Udp
     {
         // State object for reading client data asynchronously
