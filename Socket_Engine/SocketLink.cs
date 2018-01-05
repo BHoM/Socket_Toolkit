@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Net.NetworkInformation;
 using System.Threading;
 
 namespace BH.Adapter.Socket
@@ -32,11 +31,6 @@ namespace BH.Adapter.Socket
             // Set things up
             m_Port = port;
             m_ServerName = server;
-
-            IEnumerable<int> openPorts = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Select(x => x.Port);
-            if (!openPorts.Contains(port))
-                throw new InvalidOperationException("No client listening at " + server + ":" + port + ". Please open listener before sending any data");
-
             for (int i = 0; i < 5; i++)
             {
                 try
@@ -44,10 +38,10 @@ namespace BH.Adapter.Socket
                     m_Client = new TcpClient(server, port);
                     break;
                 }
-                catch(Exception ex )
+                catch(Exception)
                 {
                     m_Client = null;
-                    if (i == 4) throw ex;
+                    Thread.Sleep(500);
                 }
             }
 
