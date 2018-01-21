@@ -5,7 +5,7 @@ using System.Net;
 using SS = System.Net.Sockets;
 using System.Threading;
 
-namespace BH.Engine.Socket
+namespace BH.Adapter.Socket
 {
     public static class SocketLink_Udp
     {

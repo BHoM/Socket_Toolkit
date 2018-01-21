@@ -1,4 +1,5 @@
 ﻿using BH.Adapter.Socket;
+using BH.Adapter.Socket.Tcp;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Structural.Elements;
@@ -61,15 +62,26 @@ namespace Socket_Test
             };
 
             int port = 8888;
-            SocketServer server = new SocketServer(port);
-            server.DataObservers += ReceivedData;
-            server.Start(port);
+            int nbLinks = 3;
+            List<SocketLink_Tcp> links = new List<SocketLink_Tcp>();
+            for (int i = 0; i < nbLinks; i++)
+            {
+                Thread.Sleep(200);
+                SocketLink_Tcp link = new SocketLink_Tcp(port);
+                link.DataObservers += ReceivedData;
+                links.Add(link);
+            }
 
             Console.WriteLine("Sending data...");
-            SocketLink client = new SocketLink("127.0.0.1", port);
-            client.SendData(items);
+            int nbSenders = 3;
+            for (int i = 0; i < nbSenders; i++)
+            {
+                Thread.Sleep(200);
+                links[i].SendData(items, i.ToString());
+            }
+                
 
-            Thread.Sleep(1000);
+            /*Thread.Sleep(1000);
 
             for (int i = 0; i < 10000; i++)
                 items.Add(new Node { Position = new Point { X = 1, Y = 2, Z = 3 }, Name = ("X" + i) });
@@ -83,12 +95,12 @@ namespace Socket_Test
                     break;
                 else
                     client.SendData(new List<object> { userMessage });
-            }
+            }*/
         }
 
-        static void ReceivedData(List<object> objects)
+        static void ReceivedData(DataPackage package)
         {
-            Console.WriteLine("Received " + objects.Count + " objects");
+            Console.WriteLine("Link received " + package.Data.Count + " objects with the tag " + package.Tag);
         }
     }
 }

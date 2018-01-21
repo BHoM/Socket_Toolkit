@@ -53,7 +53,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Socket_Engine\Socket_Engine.csproj">
+    <ProjectReference Include="..\Socket_Adapter\Socket_Adapter.csproj">
       <Project>{ffef6e83-840b-41b3-94a1-7dd10550ab02}</Project>
       <Name>Socket_Engine</Name>
     </ProjectReference>
