@@ -7,29 +7,24 @@ using System.Threading;
 
 namespace BH.Adapter.Socket
 {
-    public class SocketServer
+    public class SocketServer_Tcp : DataTransmitter
     {
-        public delegate void DataEvent(List<object> data);
-
-
         /***************************************************/
         /**** Properties                                ****/
         /***************************************************/
-
-        public event DataEvent DataObservers;
 
 
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SocketServer(int port = 8888)
+        public SocketServer_Tcp()
         {
         }
 
         /***************************************************/
 
-        ~SocketServer()
+        ~SocketServer_Tcp()
         {
             Stop();
         }
@@ -82,6 +77,21 @@ namespace BH.Adapter.Socket
 
 
         /***************************************************/
+        /**** Inherited Methods                         ****/
+        /***************************************************/
+
+        protected override void HandleNewData(byte[] data, TcpClient source)
+        {
+            foreach (TcpClient client in m_Clients)
+            {
+                if (source != client)
+                    SendToClient(client, data);
+            }
+                
+        }
+
+
+        /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/
 
@@ -94,62 +104,15 @@ namespace BH.Adapter.Socket
                 m_Clients.Add(client);
                 Thread clientThread = new Thread(() => ListenToClient(client));
                 clientThread.Start();
+
+                if (m_LastMessage != null)
+                    SendToClient(client, m_LastMessage);
+
+                m_Listener.BeginAcceptTcpClient(AcceptClient, m_Listener);
             }
             catch (Exception e)
             {
                 Console.WriteLine("Failed to accept client: " + e);
-            }
-        }
-
-        /***************************************************/
-
-        private void ListenToClient(TcpClient client)
-        {
-            int messageSize = 0;
-            int bytesRead = 0;
-            byte[] sizeBuffer = new byte[4];
-            byte[] messageBuffer = null;
-            NetworkStream stream = client.GetStream();
-
-            while(true)     // TODO: Make sure the case of multiple concatenated messages is covered
-            {
-                int available = client.Available;
-                if (messageSize == 0) 
-                {
-                    if (available >= 4)
-                    {
-                        stream.Read(sizeBuffer, 0, 4);
-                        if (BitConverter.IsLittleEndian)
-                            Array.Reverse(sizeBuffer);
-
-                        messageSize = BitConverter.ToInt32(sizeBuffer, 0);
-                        bytesRead = 0;
-                        messageBuffer = new byte[messageSize];
-                    }
-                }
-                else
-                {
-                    if (available > 0)
-                    {
-                        int toRead = Math.Min(available, messageSize - bytesRead);
-                        stream.Read(messageBuffer, bytesRead, toRead);
-                        bytesRead += toRead;
-                        if (bytesRead == messageSize)
-                        {
-                            List<object> objects = BsonSerializer.Deserialize(messageBuffer, typeof(List<object>)) as List<object>;
-                            messageSize = 0;
-                            if (DataObservers != null)
-                                DataObservers.Invoke(objects);
-                        }
-                        else if (bytesRead > messageSize)
-                        {
-                            throw new Exception("Incorrect message received. Exceeded expected size of " + messageSize + " bytes.");
-                        }
-                    }
-                }
-
-                if (available == 0)
-                    Thread.Sleep(100);
             }
         }
 
@@ -161,6 +124,7 @@ namespace BH.Adapter.Socket
         private int m_Port = 8888;
         private TcpListener m_Listener = null;
         private List<TcpClient> m_Clients = new List<TcpClient>();
+        private byte[] m_LastMessage = null;
 
     }
 }

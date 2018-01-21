@@ -5,7 +5,7 @@ using SS = System.Net.Sockets;
 using System.Threading;
 using System.Diagnostics;
 
-namespace BH.Engine.Socket
+namespace BH.Adapter.Socket
 {
     public class SocketServer_Udp
     {

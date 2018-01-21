@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket_Engine", "Socket_Engine\Socket_Engine.csproj", "{FFEF6E83-840B-41B3-94A1-7DD10550AB02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket_Engine", "Socket_Adapter\Socket_Adapter.csproj", "{FFEF6E83-840B-41B3-94A1-7DD10550AB02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket_Test", "Socket_Test\Socket_Test.csproj", "{D5580B47-E61E-41BC-9B05-E6AC8328F099}"
 EndProject

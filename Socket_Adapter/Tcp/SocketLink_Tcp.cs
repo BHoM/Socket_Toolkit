@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using BH.Adapter.Socket.Tcp;
+using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using System;
@@ -11,34 +12,45 @@ using System.Threading;
 
 namespace BH.Adapter.Socket
 {
-    public class SocketLink
+    public class SocketLink_Tcp : DataTransmitter
     {
         /***************************************************/
         /**** Properties                                ****/
         /***************************************************/
 
+        public event DataEvent DataObservers;
 
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SocketLink(string server, int port = 8888)
+        public SocketLink_Tcp(int port = 8888, string address = "127.0.0.1")
         {
             // Check the port value
             if (port < 3000 || port > 65000)
                 throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 65000");
 
+            // Make sure the server already exists
+            if (address == "127.0.0.1" && !Global.TcpServers.ContainsKey(port))
+            {
+                Global.TcpServers[port] = new SocketServer_Tcp();
+                Global.TcpServers[port].Start(port);
+            }
+                
+
             // Set things up
             m_Port = port;
-            m_ServerName = server;
+            m_Address = address;
+
+            // Try to connect to server
             for (int i = 0; i < 5; i++)
             {
                 try
                 {
-                    m_Client = new TcpClient(server, port);
+                    m_Client = new TcpClient(address, port);
                     break;
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     m_Client = null;
                     Thread.Sleep(500);
@@ -47,12 +59,15 @@ namespace BH.Adapter.Socket
 
             if (m_Client == null)
                 throw new Exception("The socket link failed to connect to port " + port);
-            
+
+            // Start listening for server
+            Thread listeningThread = new Thread(() => ListenToClient(m_Client));
+            listeningThread.Start();
         }
 
         /***************************************************/
 
-        ~SocketLink()
+        ~SocketLink_Tcp()
         {
             if (m_Client != null)
                 m_Client.Close();
@@ -63,22 +78,11 @@ namespace BH.Adapter.Socket
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public bool SendData(List<object> objects)
-        {
-
-            MemoryStream memory = new MemoryStream();
-            BsonSerializer.Serialize(new BsonBinaryWriter(memory), typeof(List<BsonDocument>), objects.Select(x => x.ToBsonDocument()).ToList());
-
-            return SendData(memory.ToArray());
-        }
-
-        /***************************************************/
-
-        public bool SendData(byte[] data)
+        public bool SendData(List<object> data, string tag = "")
         {
             if (m_Client == null)
             {
-                try { m_Client = new TcpClient(m_ServerName, m_Port); }
+                try { m_Client = new TcpClient(m_Address, m_Port); }
                 catch (Exception) { m_Client = null; }
 
                 if (m_Client == null)
@@ -86,28 +90,35 @@ namespace BH.Adapter.Socket
             }
 
 
-            if (!m_Client.Client.Poll(500, SelectMode.SelectWrite))
-                return false; // Still sending data
-                
-            NetworkStream stream = m_Client.GetStream();
-
-            // First send the size of the message
-            Int32 value = IPAddress.HostToNetworkOrder(data.Length); //Convert long from Host Byte Order to Network Byte Order
-            stream.Write(BitConverter.GetBytes(value), 0, sizeof(Int32));
-            stream.Flush();
-
-            // Then send the message itself
-            stream.Write(data, 0, data.Length);
-            stream.Flush();
-
-            return true;
+            return SendToClient(m_Client, new DataPackage(data, tag));
         }
 
         /***************************************************/
-        /**** Private Methods                           ****/
+
+        /*public bool SendData(byte[] data)
+        {
+            if (m_Client == null)
+            {
+                try { m_Client = new TcpClient(m_Address, m_Port); }
+                catch (Exception) { m_Client = null; }
+
+                if (m_Client == null)
+                    throw new Exception("The socket link failed to connect to port " + m_Port);
+            }
+
+            return SendToClient(m_Client, data);
+        }*/
+
+
+        /***************************************************/
+        /**** Inherited Methods                         ****/
         /***************************************************/
 
-
+        protected override void HandleNewData(byte[] data, TcpClient source)
+        {
+            if (DataObservers != null)
+                DataObservers.Invoke(BsonSerializer.Deserialize(data, typeof(DataPackage)) as DataPackage);
+        }
 
 
         /***************************************************/
@@ -115,8 +126,7 @@ namespace BH.Adapter.Socket
         /***************************************************/
 
         private int m_Port = 8888;
-        private string m_ServerName = "";
+        private string m_Address = "";
         private TcpClient m_Client = null;
-
     }
 }
