@@ -7,7 +7,7 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter
     {
-        protected override IEnumerable<BHoMObject> Read(Type type, IList ids)
+        protected override IEnumerable<IObject> Read(Type type, IList ids)
         {
             throw new NotImplementedException();
         }
