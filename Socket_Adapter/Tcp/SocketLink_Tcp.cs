@@ -95,7 +95,7 @@ namespace BH.Adapter.Socket
 
         /***************************************************/
 
-        /*public bool SendData(byte[] data)
+        public bool SendData(byte[] data)
         {
             if (m_Client == null)
             {
@@ -107,7 +107,7 @@ namespace BH.Adapter.Socket
             }
 
             return SendToClient(m_Client, data);
-        }*/
+        }
 
 
         /***************************************************/
