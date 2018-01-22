@@ -96,7 +96,7 @@ namespace BH.Adapter.Socket
 
         protected bool SendToClient(TcpClient client, byte[] data)
         {
-            if (!client.Client.Poll(500, SelectMode.SelectWrite))
+            if (!client.Connected || !client.Client.Poll(500, SelectMode.SelectWrite))
                 return false; // Still sending data
 
             NetworkStream stream = client.GetStream();
