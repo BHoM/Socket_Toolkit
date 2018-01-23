@@ -4,6 +4,7 @@ using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -89,7 +90,7 @@ namespace BH.Adapter.Socket
                     throw new Exception("The socket link failed to connect to port " + m_Port);
             }
 
-
+            Console.WriteLine("Sending Data at " + (DateTime.Now.Ticks / (TimeSpan.TicksPerSecond / 10)).ToString());
             return SendToClient(m_Client, new DataPackage(data, tag));
         }
 
@@ -116,6 +117,8 @@ namespace BH.Adapter.Socket
 
         protected override void HandleNewData(byte[] data, TcpClient source)
         {
+            Debug.WriteLine("Received Data at " + (DateTime.Now.Ticks / (TimeSpan.TicksPerSecond / 10)).ToString());
+            Console.WriteLine("Received Data at " + (DateTime.Now.Ticks / (TimeSpan.TicksPerSecond / 10)).ToString());
             if (DataObservers != null)
                 DataObservers.Invoke(BsonSerializer.Deserialize(data, typeof(DataPackage)) as DataPackage);
         }

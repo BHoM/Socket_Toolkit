@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -82,6 +83,7 @@ namespace BH.Adapter.Socket
 
         protected override void HandleNewData(byte[] data, TcpClient source)
         {
+            Debug.WriteLine("Server sending to " + (m_Clients.Count - 1).ToString() + " clients at " + (DateTime.Now.Ticks / (TimeSpan.TicksPerSecond / 10)).ToString());
             foreach (TcpClient client in m_Clients)
             {
                 if (source != client)

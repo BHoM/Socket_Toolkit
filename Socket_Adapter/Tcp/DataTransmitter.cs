@@ -4,6 +4,7 @@ using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -99,6 +100,8 @@ namespace BH.Adapter.Socket
             if (!client.Connected || !client.Client.Poll(500, SelectMode.SelectWrite))
                 return false; // Still sending data
 
+            Debug.WriteLine("Sending to client at " + (DateTime.Now.Ticks / (TimeSpan.TicksPerSecond / 10)).ToString());
+
             NetworkStream stream = client.GetStream();
 
             // First send the size of the message
@@ -109,6 +112,8 @@ namespace BH.Adapter.Socket
             // Then send the message itself
             stream.Write(data, 0, data.Length);
             stream.Flush();
+
+            Debug.WriteLine("Sent to client at " + (DateTime.Now.Ticks / (TimeSpan.TicksPerSecond / 10)).ToString());
 
             return true;
         }

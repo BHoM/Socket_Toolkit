@@ -1,8 +1,10 @@
 ﻿using BH.Adapter.Socket;
 using BH.Adapter.Socket.Tcp;
+using BH.Engine.Structure;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Structural.Elements;
+using BH.oM.Structural.Properties;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -33,9 +35,33 @@ namespace Socket_Test
     {
         static void Main(string[] args)
         {
-            TestTcpSocket();
+            SpeedTest();
 
             Console.ReadLine();
+        }
+
+
+
+        static void SpeedTest()
+        {
+            int port = 8400;
+            SocketLink_Tcp link1 = new SocketLink_Tcp(port);
+            SocketLink_Tcp link2 = new SocketLink_Tcp(port);
+
+            List<object> list = new List<object>();
+            for (int i = 0; i < 10; i++)
+                list.Add(Create.FabricatedSteelBoxSection(i, i, i, i, i));
+
+            Thread.Sleep(1000);
+            link1.SendData(list);
+
+
+            list = new List<object>();
+            for (int i = 0; i < 5000; i++)
+                list.Add(Create.Bar(Create.Node(new Point { X = 1, Y = 2, Z = 3 }), Create.Node(new Point { X = 1, Y = 2, Z = 3 })));
+
+            Thread.Sleep(5000);
+            link1.SendData(list);
         }
 
 
