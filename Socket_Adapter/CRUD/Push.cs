@@ -7,9 +7,12 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override bool Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
+        public override IEnumerable<IObject> Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
         {
-            return m_Link.SendData(objects.ToList<object>(), tag);
+            if (m_Link.SendData(objects.ToList<object>(), tag))
+                return objects.ToList();
+            else
+                return new List<IObject>();
         }
     }
 }
