@@ -1,16 +1,12 @@
-﻿using BH.Adapter.Socket.Tcp;
+﻿using BH.oM.Socket;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace BH.Adapter.Socket
 {
@@ -87,7 +83,8 @@ namespace BH.Adapter.Socket
         {
 
             MemoryStream memory = new MemoryStream();
-            BsonSerializer.Serialize(new BsonBinaryWriter(memory), typeof(DataPackage), package);
+            BsonDocument doc = BH.Engine.Serialiser.Convert.ToBson(package);
+            BsonSerializer.Serialize(new BsonBinaryWriter(memory), typeof(BsonDocument), doc);
 
             return SendToClient(client, memory.ToArray());
         }

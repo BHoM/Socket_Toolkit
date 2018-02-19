@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket_Engine", "Socket_Adapter\Socket_Adapter.csproj", "{FFEF6E83-840B-41B3-94A1-7DD10550AB02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket_Adapter", "Socket_Adapter\Socket_Adapter.csproj", "{FFEF6E83-840B-41B3-94A1-7DD10550AB02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket_Test", "Socket_Test\Socket_Test.csproj", "{D5580B47-E61E-41BC-9B05-E6AC8328F099}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socket_oM", "Socket_oM\Socket_oM.csproj", "{3F378F18-88DB-4139-9A20-00BCA576CFB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D5580B47-E61E-41BC-9B05-E6AC8328F099}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5580B47-E61E-41BC-9B05-E6AC8328F099}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5580B47-E61E-41BC-9B05-E6AC8328F099}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F378F18-88DB-4139-9A20-00BCA576CFB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F378F18-88DB-4139-9A20-00BCA576CFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F378F18-88DB-4139-9A20-00BCA576CFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F378F18-88DB-4139-9A20-00BCA576CFB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

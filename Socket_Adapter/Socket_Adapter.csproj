@@ -40,6 +40,9 @@
       <HintPath>..\packages\MongoDB.Bson.2.4.4\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Serialiser_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -59,7 +62,6 @@
     <Compile Include="CRUD\Update.cs" />
     <Compile Include="Socket_Adapter.cs" />
     <Compile Include="Tcp\DataEvent.cs" />
-    <Compile Include="Tcp\DataPackage.cs" />
     <Compile Include="Tcp\Global.cs" />
     <Compile Include="Tcp\DataTransmitter.cs" />
     <Compile Include="Udp\SocketLink_Udp.cs" />
@@ -70,6 +72,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Socket_oM\Socket_oM.csproj">
+      <Project>{3f378f18-88db-4139-9a20-00bca576cfb1}</Project>
+      <Name>Socket_oM</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
