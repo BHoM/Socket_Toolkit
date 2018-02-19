@@ -1,12 +1,8 @@
-﻿using BH.Adapter.Socket.Tcp;
+﻿using BH.oM.Socket;
 using MongoDB.Bson;
-using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -90,7 +86,7 @@ namespace BH.Adapter.Socket
             }
 
 
-            return SendToClient(m_Client, new DataPackage(data, tag));
+            return SendToClient(m_Client, new DataPackage { Data = data, Tag = tag });
         }
 
         /***************************************************/
@@ -117,7 +113,15 @@ namespace BH.Adapter.Socket
         protected override void HandleNewData(byte[] data, TcpClient source)
         {
             if (DataObservers != null)
-                DataObservers.Invoke(BsonSerializer.Deserialize(data, typeof(DataPackage)) as DataPackage);
+            {
+                BsonDocument doc = BsonSerializer.Deserialize(data, typeof(BsonDocument)) as BsonDocument;
+                if (doc == null) return;
+
+                DataPackage package = BH.Engine.Serialiser.Convert.FromBson(doc) as DataPackage;
+                if (package != null)
+                    DataObservers.Invoke(package);
+            }
+                
         }
 
 
