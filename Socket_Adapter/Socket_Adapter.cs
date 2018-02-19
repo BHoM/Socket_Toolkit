@@ -1,4 +1,4 @@
-﻿using BH.Adapter.Socket.Tcp;
+﻿using BH.oM.Socket;
 using System.Collections.Generic;
 
 namespace BH.Adapter.Socket

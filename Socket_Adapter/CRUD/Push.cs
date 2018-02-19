@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using BH.oM.Base;
 using System.Linq;
-using BH.Adapter.Socket.Tcp;
 
 namespace BH.Adapter.Socket
 {

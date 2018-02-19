@@ -1,7 +1,7 @@
 ﻿using BH.Adapter.Socket;
-using BH.Adapter.Socket.Tcp;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Socket;
 using BH.oM.Structural.Elements;
 using System;
 using System.Collections.Generic;

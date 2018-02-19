@@ -1,7 +1,5 @@
-﻿using BH.oM.Base;
-using BH.oM.Queries;
+﻿using BH.oM.Queries;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.Adapter.Socket
 {
