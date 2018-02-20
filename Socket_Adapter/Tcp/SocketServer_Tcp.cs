@@ -46,13 +46,20 @@ namespace BH.Adapter.Socket
                 m_Listener = null;
             }
 
-            // Start new server
-            m_Port = port;
-            m_Listener = new TcpListener(IPAddress.Any, m_Port);
-            m_Listener.Start();
+            try
+            {
+                // Start new server
+                m_Port = port;
+                m_Listener = new TcpListener(IPAddress.Any, m_Port);
+                m_Listener.Start();
 
-            // Start accepting client
-            m_Listener.BeginAcceptTcpClient(AcceptClient, m_Listener);
+                // Start accepting client
+                m_Listener.BeginAcceptTcpClient(AcceptClient, m_Listener);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             return true;
         }
