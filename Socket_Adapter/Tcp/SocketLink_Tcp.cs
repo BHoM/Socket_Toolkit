@@ -29,8 +29,9 @@ namespace BH.Adapter.Socket
             // Make sure the server already exists
             if (address == "127.0.0.1" && !Global.TcpServers.ContainsKey(port))
             {
-                Global.TcpServers[port] = new SocketServer_Tcp();
-                Global.TcpServers[port].Start(port);
+                SocketServer_Tcp server = new SocketServer_Tcp();
+                if (server.Start(port))
+                    Global.TcpServers[port] = server;
             }
                 
 
