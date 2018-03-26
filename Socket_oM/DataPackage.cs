@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.oM.Socket
 {
-    public class DataPackage
+    public class DataPackage : IObject
     {
         /***************************************************/
         /**** Properties                                ****/
