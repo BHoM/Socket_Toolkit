@@ -88,10 +88,23 @@ namespace BH.Adapter.Socket
 
         protected override void HandleNewData(byte[] data, TcpClient source)
         {
+            List<TcpClient> failingClients = new List<TcpClient>();
             foreach (TcpClient client in m_Clients)
             {
-                if (source != client)
-                    SendToClient(client, data);
+                try
+                {
+                    if (source != client)
+                        SendToClient(client, data);
+                }
+                catch (Exception)
+                {
+                    failingClients.Add(client);
+                }
+
+            }
+            foreach (TcpClient client in failingClients)
+            {
+                m_Clients.Remove(client);
             }
                 
         }
