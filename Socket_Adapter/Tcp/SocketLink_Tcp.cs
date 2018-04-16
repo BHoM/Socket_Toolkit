@@ -115,12 +115,28 @@ namespace BH.Adapter.Socket
         {
             if (DataObservers != null)
             {
-                BsonDocument doc = BsonSerializer.Deserialize(data, typeof(BsonDocument)) as BsonDocument;
-                if (doc == null) return;
+                DataPackage package;
 
-                DataPackage package = BH.Engine.Serialiser.Convert.FromBson(doc) as DataPackage;
-                if (package != null)
-                    DataObservers.Invoke(package);
+                try
+                {
+                    //Try to deserialise the data
+                    BsonDocument doc = BsonSerializer.Deserialize(data, typeof(BsonDocument)) as BsonDocument;
+                    if (doc == null) return;
+
+                    package = BH.Engine.Serialiser.Convert.FromBson(doc) as DataPackage;
+                }
+                catch
+                {
+                    //If the deserialisation fails, create an empty package
+                    package = new DataPackage();
+                }
+
+                try
+                {
+                    if (package != null)
+                        DataObservers.Invoke(package);
+                }
+                catch { }
             }
                 
         }
