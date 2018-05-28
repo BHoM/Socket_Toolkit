@@ -75,6 +75,23 @@ namespace BH.Adapter.Socket
         /**** Public Methods                            ****/
         /***************************************************/
 
+        public bool SendData(DataPackage package)
+        {
+            if (m_Client == null)
+            {
+                try { m_Client = new TcpClient(m_Address, m_Port); }
+                catch (Exception) { m_Client = null; }
+
+                if (m_Client == null)
+                    throw new Exception("The socket link failed to connect to port " + m_Port);
+            }
+
+
+            return SendToClient(m_Client, package);
+        }
+
+        /***************************************************/
+
         public bool SendData(List<object> data, string tag = "")
         {
             if (m_Client == null)
