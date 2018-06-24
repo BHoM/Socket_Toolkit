@@ -31,6 +31,9 @@ namespace BH.Adapter.Socket
 
         protected void ListenToClient(TcpClient client)
         {
+            if (client == null)
+                return;
+
             int messageSize = 0;
             int bytesRead = 0;
             byte[] sizeBuffer = new byte[4];

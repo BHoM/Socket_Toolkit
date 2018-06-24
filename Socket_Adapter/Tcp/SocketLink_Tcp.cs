@@ -20,27 +20,27 @@ namespace BH.Adapter.Socket
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SocketLink_Tcp(int port = 8888, string address = "127.0.0.1")
+        public SocketLink_Tcp(int port = 8888, string address = "127.0.0.1", bool internalServer = true)
         {
             // Check the port value
             if (port < 3000 || port > 65000)
                 throw new InvalidOperationException("Invalid port number. Please use a number between 3000 and 65000");
 
             // Make sure the server already exists
-            if (address == "127.0.0.1" && !Global.TcpServers.ContainsKey(port))
+            if (internalServer && address == "127.0.0.1" && !Global.TcpServers.ContainsKey(port))
             {
                 SocketServer_Tcp server = new SocketServer_Tcp();
                 if (server.Start(port))
                     Global.TcpServers[port] = server;
             }
-                
+
 
             // Set things up
             m_Port = port;
             m_Address = address;
 
             // Try to connect to server
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 10; i++)
             {
                 try
                 {
@@ -55,7 +55,7 @@ namespace BH.Adapter.Socket
             }
 
             if (m_Client == null)
-                throw new Exception("The socket link failed to connect to port " + port);
+                BH.Engine.Reflection.Compute.RecordError("The socket link failed to connect to port " + port);
 
             // Start listening for server
             Thread listeningThread = new Thread(() => ListenToClient(m_Client));
@@ -155,7 +155,7 @@ namespace BH.Adapter.Socket
                 }
                 catch { }
             }
-                
+
         }
 
 
