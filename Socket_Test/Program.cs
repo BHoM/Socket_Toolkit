@@ -2,7 +2,7 @@
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Socket;
-using BH.oM.Structural.Elements;
+using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
 using System.Threading;
