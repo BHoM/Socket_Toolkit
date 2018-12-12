@@ -1,6 +1,6 @@
 ﻿using BH.oM.Base;
 using System.Collections.Generic;
-using BH.oM.Reflection.Debuging;
+using BH.oM.Reflection.Debugging;
 
 namespace BH.oM.Socket
 {
