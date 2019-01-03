@@ -24,7 +24,6 @@ using BH.Adapter.Socket;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Socket;
-using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -70,12 +69,6 @@ namespace Socket_Test
                 new C { a = 3, c = 56 },
                 new D { a = 4, b = 67, d = 123 },
                 new E { a = 5, c = 78, e = 456 },
-                new Node {Position = new Point { X = 1, Y = 2, Z = 3 }, Name = "X"},
-                new List<BHoMObject> {
-                    new Node {Position  = new Point { X = 1, Y = 2, Z = 3 }, Name = "A"},
-                    new Node {Position  = new Point { X = 4, Y = 5, Z = 6 }, Name = "B"},
-                    new Node {Position  = new Point { X = 7, Y = 8, Z = 9 }, Name = "C"}
-                },
                 new Dictionary<string, A> {
                     { "A",  new A { a = 1 } },
                     { "C",  new C { a = 3, c = 56 } },
