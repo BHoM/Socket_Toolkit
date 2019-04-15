@@ -68,7 +68,7 @@ namespace BH.Adapter.Socket
             {
                 if (m_Port != port && port != 0)
                 {
-                    m_Socket.Bind(new IPEndPoint(IPAddress.Any, port));
+                    m_Socket.Bind(new IPEndPoint(IPAddress.Loopback, port));
                     m_Port = port;
                 }
                     
