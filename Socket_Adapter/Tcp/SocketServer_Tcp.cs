@@ -72,7 +72,7 @@ namespace BH.Adapter.Socket
             {
                 // Start new server
                 m_Port = port;
-                m_Listener = new TcpListener(IPAddress.Any, m_Port);
+                m_Listener = new TcpListener(IPAddress.Loopback, m_Port);
                 m_Listener.Start();
 
                 // Start accepting client
