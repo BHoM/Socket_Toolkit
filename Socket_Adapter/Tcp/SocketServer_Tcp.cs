@@ -55,7 +55,7 @@ namespace BH.Adapter.Socket
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public bool Start(int port = 8888)
+        public bool Start(int port = 8888, bool local = true)
         {
             // Check the port value
             if (port < 3000 || port > 65000) 
@@ -72,7 +72,7 @@ namespace BH.Adapter.Socket
             {
                 // Start new server
                 m_Port = port;
-                m_Listener = new TcpListener(IPAddress.Loopback, m_Port);
+                m_Listener = new TcpListener(local ? IPAddress.Loopback : IPAddress.Any, m_Port);
                 m_Listener.Start();
 
                 // Start accepting client

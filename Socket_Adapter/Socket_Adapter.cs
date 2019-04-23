@@ -31,9 +31,9 @@ namespace BH.Adapter.Socket
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SocketAdapter(string address = "127.0.0.1", int port = 8888)
+        public SocketAdapter(string address = "127.0.0.1", int port = 8888, bool localOnly = true)
         {
-            m_Link = new SocketLink_Tcp(port, address);
+            m_Link = new SocketLink_Tcp(port, address, local: localOnly);
             m_Link.DataObservers += M_Link_DataObservers;
         }
 

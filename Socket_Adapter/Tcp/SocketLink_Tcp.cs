@@ -42,7 +42,7 @@ namespace BH.Adapter.Socket
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SocketLink_Tcp(int port = 8888, string address = "127.0.0.1", bool internalServer = true)
+        public SocketLink_Tcp(int port = 8888, string address = "127.0.0.1", bool internalServer = true, bool local = true)
         {
             // Check the port value
             if (port < 3000 || port > 65000)
@@ -52,7 +52,7 @@ namespace BH.Adapter.Socket
             if (internalServer && address == "127.0.0.1" && !Global.TcpServers.ContainsKey(port))
             {
                 SocketServer_Tcp server = new SocketServer_Tcp();
-                if (server.Start(port))
+                if (server.Start(port, local))
                     Global.TcpServers[port] = server;
             }
 
