@@ -57,7 +57,7 @@ namespace BH.Adapter.Socket
                 m_Thread.Abort();
         }
 
-        public bool Listen(int port = 8888)
+        public bool Listen(int port = 8888, bool local = true)
         {
             /*if (m_Port == port || port == 0)
                 return true;*/
@@ -68,7 +68,7 @@ namespace BH.Adapter.Socket
             {
                 if (m_Port != port && port != 0)
                 {
-                    m_Socket.Bind(new IPEndPoint(IPAddress.Loopback, port));
+                    m_Socket.Bind(new IPEndPoint(local ? IPAddress.Loopback : IPAddress.Any, port));
                     m_Port = port;
                 }
                     
