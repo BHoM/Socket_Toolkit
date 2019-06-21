@@ -20,18 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using System.Collections.Generic;
 
 namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override IEnumerable<object> Pull(IQuery query, Dictionary<string, object> config = null)
+        public override IEnumerable<object> Pull(IRequest query, Dictionary<string, object> config = null)
         {
-            if (query is FilterQuery)
+            if (query is FilterRequest)
             {
-                string tag = ((FilterQuery)query).Tag;
+                string tag = ((FilterRequest)query).Tag;
                 if (m_LastPackages.ContainsKey(tag))
                     return m_LastPackages[tag];
                 else

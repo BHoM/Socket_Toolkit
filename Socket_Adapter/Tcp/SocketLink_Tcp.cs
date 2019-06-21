@@ -62,11 +62,13 @@ namespace BH.Adapter.Socket
             m_Address = address;
 
             // Try to connect to server
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 3; i++)
             {
                 try
                 {
-                    m_Client = new TcpClient(address, port);
+                    m_Client = new TcpClient();
+                    var result = m_Client.BeginConnect(address, port, null, null);
+                    var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(1));
                     break;
                 }
                 catch (Exception)

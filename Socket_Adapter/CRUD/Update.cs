@@ -20,14 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using System.Collections.Generic;
 
 namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override int UpdateProperty(FilterQuery query, string property, object value, Dictionary<string, object> config = null)
+        public override int UpdateProperty(FilterRequest query, string property, object value, Dictionary<string, object> config = null)
         {
             return 0;
         }
