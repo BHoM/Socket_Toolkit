@@ -27,11 +27,11 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override IEnumerable<object> Pull(IRequest query, Dictionary<string, object> config = null)
+        public override IEnumerable<object> Pull(IRequest request, Dictionary<string, object> config = null)
         {
-            if (query is FilterRequest)
+            if (request is FilterRequest)
             {
-                string tag = ((FilterRequest)query).Tag;
+                string tag = ((FilterRequest)request).Tag;
                 if (m_LastPackages.ContainsKey(tag))
                     return m_LastPackages[tag];
                 else

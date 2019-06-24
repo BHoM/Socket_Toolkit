@@ -27,7 +27,7 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override int UpdateProperty(FilterRequest query, string property, object value, Dictionary<string, object> config = null)
+        public override int UpdateProperty(FilterRequest request, string property, object value, Dictionary<string, object> config = null)
         {
             return 0;
         }
