@@ -37,8 +37,12 @@ namespace BH.Adapter.Socket
                 else
                     return new List<object>();
             }
-
-            return new List<object>();
+            else
+            {
+                Engine.Reflection.Compute.RecordWarning("The socket adater only supports FilterRequests.");
+                return new List<object>();
+            }
+                
         }
     }
 }

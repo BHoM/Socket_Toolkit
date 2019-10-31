@@ -71,7 +71,6 @@
     <Compile Include="CRUD\Push.cs" />
     <Compile Include="CRUD\Read.cs" />
     <Compile Include="CRUD\Create.cs" />
-    <Compile Include="CRUD\Update.cs" />
     <Compile Include="Socket_Adapter.cs" />
     <Compile Include="Tcp\DataEvent.cs" />
     <Compile Include="Tcp\Global.cs" />
