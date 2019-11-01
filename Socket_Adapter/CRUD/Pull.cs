@@ -39,7 +39,7 @@ namespace BH.Adapter.Socket
             }
             else
             {
-                Engine.Reflection.Compute.RecordWarning("The socket adater only supports FilterRequests.");
+                Engine.Reflection.Compute.RecordWarning("The socket adapter only supports FilterRequest with Tags.");
                 return new List<object>();
             }
                 
