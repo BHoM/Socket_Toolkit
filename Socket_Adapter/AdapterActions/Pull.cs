@@ -27,7 +27,7 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override IEnumerable<object> Pull(IRequest request, Dictionary<string, object> config = null)
+        public override IEnumerable<object> Pull(IRequest request, oM.Adapter.PullType pullType = 0, Dictionary<string, object> config = null)
         {
             if (request is FilterRequest)
             {
