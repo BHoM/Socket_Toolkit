@@ -27,7 +27,7 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override int Delete(IRequest filter, Dictionary<string, object> config = null)
+        public override int Remove(IRequest filter, Dictionary<string, object> config = null)
         {
             return 0;
         }
