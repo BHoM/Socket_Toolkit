@@ -29,12 +29,12 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override List<IObject> Push(IEnumerable<IObject> objects, string tag = "", PushType pushType = PushType.AdapterDefault, Dictionary<string, object> config = null)
+        public override List<object> Push(IEnumerable<object> objects, string tag = "", PushType pushType = PushType.AdapterDefault, ActionConfig config = null)
         {
             if (m_Link.SendData(objects.ToList<object>(), tag))
                 return objects.ToList();
             else
-                return new List<IObject>();
+                return new List<object>();
         }
     }
 }

@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapter;
 using BH.oM.Data.Requests;
 using System.Collections.Generic;
 
@@ -27,7 +28,7 @@ namespace BH.Adapter.Socket
 {
     public partial class SocketAdapter : BHoMAdapter
     {
-        public override IEnumerable<object> Pull(IRequest request, oM.Adapter.PullType pullType = 0, Dictionary<string, object> config = null)
+        public override IEnumerable<object> Pull(IRequest request, oM.Adapter.PullType pullType = 0, ActionConfig config = null)
         {
             if (request is FilterRequest)
             {
