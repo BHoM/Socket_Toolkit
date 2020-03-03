@@ -31,22 +31,26 @@ namespace BH.Adapter.Socket
 {
     public class SocketServer_Udp
     {
-        // State object for reading client data asynchronously
-        public class StateObject
-        {
-            public SS.Socket handler = null;                    // Client  socket.
-            public byte[] buffer = null;                        // Receive buffer.
-            public MessageEvent callback = null;                // Callback method
-            public int totalBytesRead = 0;                      // Total number of bytes read so far
-            public int port = 0;                                // port used by socket
-        }
+        /***************************************************/
+        /**** Events                                    ****/
+        /***************************************************/
 
-        public delegate void MessageEvent(string data);
+        public MessageEvent MessageReceived;
+
+
+        /***************************************************/
+        /**** Constructors                              ****/
+        /***************************************************/
 
         public SocketServer_Udp()
         {
             m_Socket = new SS.Socket(SS.AddressFamily.InterNetwork, SS.SocketType.Dgram, SS.ProtocolType.Udp);
         }
+
+
+        /***************************************************/
+        /**** Destructors                               ****/
+        /***************************************************/
 
         ~SocketServer_Udp()
         {
@@ -56,6 +60,11 @@ namespace BH.Adapter.Socket
             if (m_Thread != null && m_Thread.IsAlive)
                 m_Thread.Abort();
         }
+
+
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
 
         public bool Listen(int port = 8888, bool local = true)
         {
@@ -73,9 +82,9 @@ namespace BH.Adapter.Socket
                 }
                     
                 StateObject state = new StateObject();
-                state.callback = MessageReceived;
-                state.handler = m_Socket;
-                state.port = port;
+                state.Callback = MessageReceived;
+                state.Handler = m_Socket;
+                state.Port = port;
 
                 if (m_Thread != null && m_Thread.IsAlive)
                     m_Thread.Abort();
@@ -93,16 +102,26 @@ namespace BH.Adapter.Socket
             return true;
         }
 
-        public MessageEvent MessageReceived;
+        /***************************************************/
+
+        public static string ReadString(StateObject state)
+        {
+            int messageLength = state.Buffer.Length;
+            EndPoint remote = (EndPoint)(new IPEndPoint(IPAddress.Any, 0));
+
+            while (state.TotalBytesRead < messageLength)
+            {
+                int receivedDataLength = state.Handler.ReceiveFrom(state.Buffer, state.TotalBytesRead, messageLength - state.TotalBytesRead, 0, ref remote);
+                state.TotalBytesRead += receivedDataLength;
+            }
+
+            return Encoding.ASCII.GetString(state.Buffer, 0, messageLength);
+        }
 
 
-        /*************************************/
-        /****  Private fields & methods   ****/
-        /*************************************/
-
-        private int m_Port = 0;
-        private SS.Socket m_Socket = null;
-        private Thread m_Thread = null;
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
         private static void ReadMessage(StateObject state)
         {
@@ -113,13 +132,13 @@ namespace BH.Adapter.Socket
                     int bufferSize = ReadInt(state);
                     if (bufferSize > 0)
                     {
-                        state.totalBytesRead = 0;
-                        state.buffer = new byte[bufferSize];
-                        state.handler.ReceiveBufferSize = bufferSize;
+                        state.TotalBytesRead = 0;
+                        state.Buffer = new byte[bufferSize];
+                        state.Handler.ReceiveBufferSize = bufferSize;
                         string message = ReadString(state);
 
-                        if (state.callback != null)
-                            state.callback.Invoke(message);
+                        if (state.Callback != null)
+                            state.Callback.Invoke(message);
                     }
                 }
                 catch (Exception e)
@@ -132,30 +151,29 @@ namespace BH.Adapter.Socket
             
         }
 
+        /***************************************************/
+
         private static int ReadInt(StateObject state)
         {
             byte[] buffer = new byte[sizeof(Int32)];
             EndPoint remote = (EndPoint)(new IPEndPoint(IPAddress.Any, 0));
 
-            state.handler.ReceiveFrom(buffer, buffer.Length, 0, ref remote);
+            state.Handler.ReceiveFrom(buffer, buffer.Length, 0, ref remote);
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(buffer);
 
             return BitConverter.ToInt32(buffer, 0);
         }
 
-        public static string ReadString(StateObject state)
-        {
-            int messageLength = state.buffer.Length;
-            EndPoint remote = (EndPoint)(new IPEndPoint(IPAddress.Any, 0));
 
-            while (state.totalBytesRead < messageLength)
-            {
-                int receivedDataLength = state.handler.ReceiveFrom(state.buffer, state.totalBytesRead, messageLength - state.totalBytesRead, 0, ref remote);
-                state.totalBytesRead += receivedDataLength;
-            }
+        /***************************************************/
+        /**** Private Fields                            ****/
+        /***************************************************/
 
-            return Encoding.ASCII.GetString(state.buffer, 0, messageLength);
-        }
+        private int m_Port = 0;
+        private SS.Socket m_Socket = null;
+        private Thread m_Thread = null;
+
+        /***************************************************/
     }
 }
