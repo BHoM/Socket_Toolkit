@@ -32,11 +32,11 @@ namespace BH.oM.Socket
         /**** Properties                                ****/
         /***************************************************/
 
-        public List<object> Data { get; set; } = new List<object>();
+        public virtual List<object> Data { get; set; } = new List<object>();
 
-        public List<Event> Events { get; set; } = new List<Event>();
+        public virtual List<Event> Events { get; set; } = new List<Event>();
 
-        public string Tag { get; set; } = "";
+        public virtual string Tag { get; set; } = "";
 
 
         /***************************************************/
