@@ -98,7 +98,6 @@
     <PostBuildEvent>
       xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
       xcopy "$(TargetDir)MongoDB.Bson.dll"  "C:\ProgramData\BHoM\Assemblies" /Y
-      xcopy "$(TargetDir)MongoDB.Bson.xml"  "C:\ProgramData\BHoM\Assemblies" /Y
     </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
