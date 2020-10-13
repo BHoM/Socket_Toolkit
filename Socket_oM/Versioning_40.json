@@ -1,0 +1,21 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+      "BH.oM.Socket": "BH.oM.Adapters.Socket"
+    },
+    "ToOld": {
+    }
+  },
+  "Type": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Property": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  }
+}

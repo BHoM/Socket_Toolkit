@@ -24,7 +24,7 @@ using BH.oM.Base;
 using System.Collections.Generic;
 using BH.oM.Reflection.Debugging;
 
-namespace BH.oM.Socket
+namespace BH.oM.Adapters.Socket
 {
     public class DataPackage : IObject
     {
