@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Socket;
+using BH.oM.Adapters.Socket;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using System;
