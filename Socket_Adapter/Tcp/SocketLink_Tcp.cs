@@ -38,6 +38,8 @@ namespace BH.Adapter.Socket
 
         public event DataEvent DataObservers;
 
+        public int Port { get; } = 8888;
+
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
@@ -58,7 +60,7 @@ namespace BH.Adapter.Socket
 
 
             // Set things up
-            m_Port = port;
+            Port = port;
             m_Address = address;
 
             // Try to connect to server
@@ -101,11 +103,11 @@ namespace BH.Adapter.Socket
         {
             if (m_Client == null)
             {
-                try { m_Client = new TcpClient(m_Address, m_Port); }
+                try { m_Client = new TcpClient(m_Address, Port); }
                 catch (Exception) { m_Client = null; }
 
                 if (m_Client == null)
-                    throw new Exception("The socket link failed to connect to port " + m_Port);
+                    throw new Exception("The socket link failed to connect to port " + Port);
             }
 
 
@@ -118,11 +120,11 @@ namespace BH.Adapter.Socket
         {
             if (m_Client == null)
             {
-                try { m_Client = new TcpClient(m_Address, m_Port); }
+                try { m_Client = new TcpClient(m_Address, Port); }
                 catch (Exception) { m_Client = null; }
 
                 if (m_Client == null)
-                    throw new Exception("The socket link failed to connect to port " + m_Port);
+                    throw new Exception("The socket link failed to connect to port " + Port);
             }
 
 
@@ -135,11 +137,11 @@ namespace BH.Adapter.Socket
         {
             if (m_Client == null)
             {
-                try { m_Client = new TcpClient(m_Address, m_Port); }
+                try { m_Client = new TcpClient(m_Address, Port); }
                 catch (Exception) { m_Client = null; }
 
                 if (m_Client == null)
-                    throw new Exception("The socket link failed to connect to port " + m_Port);
+                    throw new Exception("The socket link failed to connect to port " + Port);
             }
 
             return SendToClient(m_Client, data);
@@ -184,8 +186,7 @@ namespace BH.Adapter.Socket
         /***************************************************/
         /**** Private Fields                            ****/
         /***************************************************/
-
-        private int m_Port = 8888;
+        
         private string m_Address = "";
         private TcpClient m_Client = null;
     }
