@@ -22,7 +22,7 @@
 
 using BH.oM.Base;
 using System.Collections.Generic;
-using BH.oM.Reflection.Debugging;
+using BH.oM.Base.Debugging;
 
 namespace BH.oM.Adapters.Socket
 {

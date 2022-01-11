@@ -79,7 +79,7 @@ namespace BH.Adapter.Socket
             }
 
             if (m_Client == null)
-                BH.Engine.Reflection.Compute.RecordError("The socket link failed to connect to port " + port);
+                BH.Engine.Base.Compute.RecordError("The socket link failed to connect to port " + port);
 
             // Start listening for server
             Thread listeningThread = new Thread(() => ListenToClient(m_Client));
