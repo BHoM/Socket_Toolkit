@@ -2,13 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>https://github.com/BHoM/Socket_Toolkit</Description>
+    <FileVersion>6.1.0.0</FileVersion>
+    <AssemblyVersion>6.0.0.0</AssemblyVersion>
     <RootNamespace>BH.oM.Adapters.Socket</RootNamespace>
     <BaseOutputPath>..\Build\</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="BHoM">
-      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
 
